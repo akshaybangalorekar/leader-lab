@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FAF7F2">
+<title>Leader Lab — 2027 Student Leaders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF7F2; --surface:#FFFFFF; --ink:#1F2421; --dim:#6B6A63; --line:#E5DDD0;
+  --terra:#C2542A; --terra-dim:#FBEDE6; --sage:#5F7A4E; --sage-dim:#EDF1E6;
+  --gold:#C08A2E; --gold-dim:#FBF2DF; --shadow:0 1px 2px rgba(31,36,33,.06), 0 8px 24px rgba(31,36,33,.05);
+  --font-body:"Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display:"Fraunces", Georgia, "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#141715; --surface:#1D211E; --ink:#EDEAE3; --dim:#9A9A91; --line:#2E332F;
+    --terra:#E2794F; --terra-dim:#33231C; --sage:#93AE7E; --sage-dim:#232B20;
+    --gold:#D9AE5C; --gold-dim:#2E2820; --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.25);
+  }
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0; padding:0;}
+body{
+  background:
+    radial-gradient(900px 500px at 12% -10%, rgba(194,84,42,.07), transparent 65%),
+    radial-gradient(700px 400px at 95% 5%, rgba(95,122,78,.08), transparent 60%),
+    var(--bg);
+  color:var(--ink); font-family:var(--font-body); font-size:17px; line-height:1.55;
+  -webkit-text-size-adjust:100%; min-height:100dvh;
+}
+.wrap{max-width:760px; margin:0 auto; padding:20px 20px calc(40px + env(safe-area-inset-bottom));}
+
+/* ---------- chrome ---------- */
+.topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px;}
+.label{
+  font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--dim); display:flex; align-items:center; gap:7px;
+}
+.label::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--terra); flex:none;}
+.count{font-size:12px; font-weight:500; color:var(--dim); text-align:right; line-height:1.3;}
+.count b{color:var(--terra); font-weight:700;}
+
+/* ---------- type ---------- */
+h1{font-family:var(--font-display); font-weight:700; font-size:clamp(30px,7vw,42px); line-height:1.08;
+   letter-spacing:-.02em; margin:0 0 10px;}
+h2{font-family:var(--font-display); font-weight:700; font-size:clamp(22px,5vw,28px); line-height:1.15;
+   letter-spacing:-.01em; margin:0 0 8px;}
+.lede{font-size:16.5px; color:var(--dim); margin:0 0 22px; max-width:56ch;}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--surface); border:1px solid var(--line); border-radius:16px;
+  padding:20px; box-shadow:var(--shadow);
+}
+.menu{display:grid; gap:12px; margin-bottom:22px;}
+.tile{
+  display:block; width:100%; text-align:left; background:var(--surface); border:1px solid var(--line);
+  border-radius:16px; padding:18px 18px; box-shadow:var(--shadow); cursor:pointer;
+  font-family:inherit; color:inherit; transition:transform .12s ease, border-color .12s ease;
+}
+.tile:active{transform:scale(.985);}
+.tile:hover{border-color:var(--terra);}
+.tile .t{font-weight:700; font-size:18px; display:flex; align-items:baseline; gap:9px;}
+.tile .d{font-size:14.5px; color:var(--dim); margin-top:4px;}
+.tile .meta{font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--terra);}
+.tile--quiet{background:transparent; box-shadow:none; border-style:dashed;}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  min-height:56px; padding:0 22px; border-radius:14px; border:1px solid transparent;
+  font-family:inherit; font-size:17px; font-weight:700; cursor:pointer;
+  transition:transform .1s ease, opacity .15s ease;
+}
+.btn:active{transform:scale(.98);}
+.btn--primary{background:var(--terra); color:#fff;}
+.btn--ghost{background:transparent; color:var(--ink); border-color:var(--line);}
+.btn--wide{width:100%;}
+.btn:disabled{opacity:.4; cursor:not-allowed;}
+.row{display:flex; gap:10px; flex-wrap:wrap;}
+.row .btn{flex:1 1 140px;}
+
+/* ---------- question ---------- */
+.qmeta{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+.pill{font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+      padding:5px 11px; border-radius:99px; background:var(--sage-dim); color:var(--sage);}
+.pill--curve{background:var(--gold-dim); color:var(--gold);}
+.pill--test{background:var(--terra-dim); color:var(--terra);}
+.qtext{font-family:var(--font-display); font-size:clamp(22px,5.4vw,30px); font-weight:700;
+       line-height:1.18; letter-spacing:-.015em; margin:0 0 16px;}
+
+/* ---------- timer ---------- */
+.timer{display:flex; align-items:center; gap:14px; margin:16px 0;}
+.tnum{font-variant-numeric:tabular-nums; font-weight:700; font-size:34px; line-height:1;
+      min-width:2.4ch; color:var(--ink);}
+.tnum.warn{color:var(--gold);}
+.tnum.over{color:var(--terra);}
+.track{flex:1; height:10px; border-radius:99px; background:var(--line); overflow:hidden;}
+.fill{height:100%; width:0%; background:var(--sage); border-radius:99px; transition:width .95s linear;}
+.fill.warn{background:var(--gold);}
+.fill.over{background:var(--terra);}
+
+/* ---------- hints ---------- */
+.hint{background:var(--sage-dim); border-radius:14px; padding:16px 18px; margin:0 0 16px;}
+.hint h3{margin:0 0 8px; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--sage); font-weight:700;}
+.hint ul{margin:0; padding-left:20px; font-size:15.5px;}
+.hint li{margin-bottom:5px;}
+.hint li:last-child{margin-bottom:0;}
+
+/* ---------- textarea ---------- */
+textarea{
+  width:100%; min-height:150px; resize:vertical; padding:15px; border-radius:14px;
+  border:1px solid var(--line); background:var(--bg); color:var(--ink);
+  font-family:inherit; font-size:17px; line-height:1.55;
+}
+textarea:focus{outline:2px solid var(--terra); outline-offset:1px;}
+.tapnote{font-size:13px; color:var(--dim); margin:8px 0 0;}
+
+/* ---------- flags ---------- */
+.flags{display:grid; gap:8px; margin:16px 0 4px;}
+.flag{display:flex; gap:10px; align-items:flex-start; font-size:15px; padding:10px 12px;
+      border-radius:11px; background:var(--bg); border:1px solid var(--line);}
+.flag .dot{width:9px; height:9px; border-radius:50%; margin-top:7px; flex:none; background:var(--line);}
+.flag.ok .dot{background:var(--sage);}
+.flag.no .dot{background:var(--gold);}
+.flag small{display:block; color:var(--dim); font-size:13px; line-height:1.4;}
+
+/* ---------- self check chips ---------- */
+.chips{display:grid; gap:9px; margin:10px 0 0;}
+.chip{
+  display:flex; gap:11px; align-items:center; text-align:left; width:100%;
+  background:var(--surface); border:1px solid var(--line); border-radius:13px;
+  padding:13px 15px; font-family:inherit; font-size:15.5px; color:inherit; cursor:pointer;
+  min-height:54px;
+}
+.chip .box{width:22px; height:22px; border-radius:7px; border:2px solid var(--line); flex:none;
+           display:flex; align-items:center; justify-content:center; font-size:14px; color:#fff;}
+.chip[aria-pressed="true"]{border-color:var(--sage); background:var(--sage-dim);}
+.chip[aria-pressed="true"] .box{background:var(--sage); border-color:var(--sage);}
+.chip[aria-pressed="true"] .box::after{content:"✓";}
+
+/* ---------- results ---------- */
+.score{display:flex; align-items:baseline; gap:12px; margin:4px 0 18px;}
+.big{font-family:var(--font-display); font-size:56px; font-weight:700; line-height:1; letter-spacing:-.03em;}
+.score .of{color:var(--dim); font-size:15px;}
+.bars{display:grid; gap:10px; margin-bottom:20px;}
+.bar{display:grid; grid-template-columns:1fr auto; gap:6px 12px; align-items:center; font-size:14px;}
+.bar .b{grid-column:1 / -1; height:8px; border-radius:99px; background:var(--line); overflow:hidden;}
+.bar .b i{display:block; height:100%; background:var(--sage); border-radius:99px;}
+.bar .n{font-variant-numeric:tabular-nums; color:var(--dim); font-size:13px;}
+
+/* ---------- misc ---------- */
+.screen{display:none; animation:fadeUp .28s ease both;}
+.screen.active{display:block;}
+@keyframes fadeUp{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important;}}
+hr.sep{border:0; border-top:1px solid var(--line); margin:22px 0;}
+.fine{font-size:13px; color:var(--dim); line-height:1.5;}
+.fine b{color:var(--ink);}
+.toast{
+  position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom)); transform:translate(-50%,20px);
+  background:var(--ink); color:var(--bg); padding:12px 20px; border-radius:99px; font-size:15px;
+  font-weight:700; opacity:0; pointer-events:none; transition:all .22s ease; z-index:50;
+}
+.toast.on{opacity:1; transform:translate(-50%,0);}
+.rescue{display:grid; gap:8px; margin-top:12px;}
+.rescue p{margin:0; font-size:15px; padding:11px 14px; border-radius:11px; background:var(--gold-dim); color:var(--ink);}
+details summary{cursor:pointer; font-weight:700; font-size:15px; padding:6px 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="label">Leader Lab</div>
+    <div class="count" id="countdown"></div>
+  </div>
+
+  <!-- ================= HOME ================= -->
+  <section class="screen active" id="s-home">
+    <h1>Practise being asked, not being perfect.</h1>
+    <p class="lede">Nobody expects a finished speech. The interviewers are listening for one real story and one clear idea. Warm up here, then have a go at the real thing.</p>
+
+    <div class="menu">
+      <button class="tile" onclick="startPractice(0)">
+        <span class="meta">Warm-up</span>
+        <div class="t">Practise a question</div>
+        <div class="d">Hints, a thinking timer, and a check on your answer. Do these as often as you like.</div>
+      </button>
+      <button class="tile" onclick="startTest()">
+        <span class="meta">When you're ready</span>
+        <div class="t">The real test</div>
+        <div class="d">Five questions, no hints, one go. Scorecard at the end you can send to your coach.</div>
+      </button>
+      <button class="tile tile--quiet" onclick="showAnswers()">
+        <div class="t">My answers</div>
+        <div class="d">Everything you've written, and a copy button.</div>
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="label" style="margin-bottom:10px">The only three rules</div>
+      <p style="margin:0 0 10px"><b>One real story beats five opinions.</b> Who was there, what you did, what happened after.</p>
+      <p style="margin:0 0 10px"><b>Short is strong.</b> About 30 seconds per answer. If you can't finish it in a breath, it's too long.</p>
+      <p style="margin:0"><b>Pausing is allowed.</b> "That's a good question, can I think for a second?" is a good answer in itself.</p>
+    </div>
+
+    <hr class="sep">
+    <p class="fine"><b>How the scoring works.</b> The app checks the <i>shape</i> of your answer — did you name a real thing, say what you'd do, keep it short. It can't judge whether your story is good. Copy your answers at the end and your coach will rate the content properly.</p>
+  </section>
+
+  <!-- ================= PRACTICE ================= -->
+  <section class="screen" id="s-practice">
+    <div class="qmeta">
+      <span class="pill" id="p-pill">Warm-up</span>
+      <span class="fine" id="p-count"></span>
+    </div>
+    <p class="qtext" id="p-q"></p>
+
+    <div class="hint" id="p-hint">
+      <h3>What a strong answer has</h3>
+      <ul id="p-hint-list"></ul>
+    </div>
+
+    <div class="timer">
+      <div class="tnum" id="p-num">0:30</div>
+      <div class="track"><div class="fill" id="p-fill"></div></div>
+    </div>
+
+    <div class="row" style="margin-bottom:14px">
+      <button class="btn btn--ghost" id="p-think" onclick="runTimer('p',30)">Think &middot; 30s</button>
+      <button class="btn btn--ghost" id="p-answer" onclick="runTimer('p',60)">Answer &middot; 60s</button>
+    </div>
+
+    <textarea id="p-text" placeholder="Say your answer out loud first, then tap the mic on your keyboard and let the iPad type it for you. Or just write it."></textarea>
+    <p class="tapnote">Tap the microphone key on your iPad keyboard and talk — it types what you say.</p>
+
+    <details>
+      <summary>Stuck? Three lines that buy you time</summary>
+      <div class="rescue">
+        <p>"That's a good question — can I think for a second?"</p>
+        <p>"Could you say that another way?"</p>
+        <p>"I don't know yet, but I'd probably ask&hellip;"</p>
+      </div>
+    </details>
+
+    <div class="flags" id="p-flags"></div>
+
+    <hr class="sep">
+    <div class="label" style="margin-bottom:10px">Your turn to judge</div>
+    <div class="chips" id="p-chips"></div>
+
+    <div class="row" style="margin-top:18px">
+      <button class="btn btn--ghost" onclick="go('s-home')">Home</button>
+      <button class="btn btn--primary" onclick="savePractice()">Save &amp; next</button>
+    </div>
+  </section>
+
+  <!-- ================= TEST ================= -->
+  <section class="screen" id="s-test">
+    <div class="qmeta">
+      <span class="pill pill--test">Real test</span>
+      <span class="fine" id="t-count"></span>
+    </div>
+    <p class="qtext" id="t-q"></p>
+    <p class="fine" style="margin:-6px 0 14px">No hints this time. Thirty seconds to think, then answer.</p>
+
+    <div class="timer">
+      <div class="tnum" id="t-num">0:30</div>
+      <div class="track"><div class="fill" id="t-fill"></div></div>
+    </div>
+
+    <div class="row" style="margin-bottom:14px">
+      <button class="btn btn--ghost" onclick="runTimer('t',30)">Think &middot; 30s</button>
+      <button class="btn btn--ghost" onclick="runTimer('t',60)">Answer &middot; 60s</button>
+    </div>
+
+    <textarea id="t-text" placeholder="Your answer&hellip;"></textarea>
+    <p class="tapnote">The mic key on your keyboard turns talking into text.</p>
+
+    <div class="row" style="margin-top:18px">
+      <button class="btn btn--ghost" onclick="quitTest()">Stop</button>
+      <button class="btn btn--primary" id="t-next" onclick="nextTest()">Next question</button>
+    </div>
+  </section>
+
+  <!-- ================= RESULT ================= -->
+  <section class="screen" id="s-result">
+    <div class="label" style="margin-bottom:8px">Scorecard</div>
+    <h2 id="r-title">Done.</h2>
+    <div class="score">
+      <span class="big" id="r-score">0</span>
+      <span class="of" id="r-of">out of 20</span>
+    </div>
+    <p class="lede" id="r-blurb" style="margin-bottom:18px"></p>
+
+    <div class="bars" id="r-bars"></div>
+
+    <div class="card" style="margin-bottom:18px">
+      <div class="label" style="margin-bottom:8px">Send this to your coach</div>
+      <p class="fine" style="margin:0 0 12px">Copy it, then paste it into the chat. You'll get a real rating of the content — not just the shape.</p>
+      <div class="row">
+        <button class="btn btn--primary" onclick="copyReport()">Copy my answers</button>
+        <button class="btn btn--ghost" onclick="showAnswers()">Read them</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <button class="btn btn--ghost" onclick="go('s-home')">Home</button>
+    </div>
+  </section>
+
+  <!-- ================= ANSWERS ================= -->
+  <section class="screen" id="s-answers">
+    <div class="label" style="margin-bottom:8px">Everything you've written</div>
+    <h2>My answers</h2>
+    <p class="lede">Nothing is sent anywhere. It lives on this iPad only.</p>
+    <div id="a-list"></div>
+    <div class="row" style="margin:16px 0">
+      <button class="btn btn--primary" onclick="copyReport()">Copy for coach</button>
+      <button class="btn btn--ghost" onclick="go('s-home')">Home</button>
+    </div>
+    <textarea id="copybox" style="min-height:120px" placeholder="Your answers appear here if the copy button is blocked — long-press and Copy."></textarea>
+  </section>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ------------------------------------------------------------------ data */
+var PRACTICE = [
+  {id:"q1", q:"Why do you want to be a student leader?",
+   hints:["One honest reason — not \"to help the school\"","Something you actually care about","What you'd get out of it too"]},
+  {id:"q2", q:"What makes a good leader? Who do you know who is one?",
+   hints:["Name a real person — a teacher, a coach, a family member","Say the one thing they do that works","Then say how you'd do the same"]},
+  {id:"q3", q:"Tell us about a time you helped someone.",
+   hints:["Pick a small, real moment, not a big vague one","Who was it, where were you, what did you do","What changed afterwards"]},
+  {id:"q4", q:"What is one thing you would change at school, and how?",
+   hints:["Pick something small enough to actually start","Say who you'd ask first","Say how you'd know it was working"]},
+  {id:"q5", q:"What would you do if you were chosen and your best friend wasn't?",
+   curve:true,
+   hints:["Don't say you'd give the badge back — that isn't true","Say what you'd actually say to them","Show you can hold both things at once"]},
+  {id:"q6", q:"Another leader disagrees with your idea. What do you do?",
+   curve:true,
+   hints:["Listen first, out loud","Find the part you agree on","Say how you'd decide when you still disagree"]},
+  {id:"q7", q:"What would you do if the job was busier than you expected?",
+   curve:true,
+   hints:["Admit it would be hard","Say what you'd drop, not what you'd magically manage","Ask for help — that's a leader's answer"]},
+  {id:"q8", q:"What question would you like to ask us?",
+   hints:["Have one ready — it shows you're interested","\"What's the hardest part of the job?\" works","Or ask what last year's leaders found hard"]}
+];
+
+var TEST_IDS = ["q1","q3","q4","q5","q8"];
+var TOTAL_FLAGS = 5;
+var SELF_CHECKS = [
+  "I gave a real example, not just an opinion",
+  "I said what I would actually do",
+  "I kept it under about a minute"
+];
+
+var state = {answers:{}, test:{i:0, texts:{}}};
+var timerId = null, timerMode = null, pracIndex = 0;
+
+/* --------------------------------------------------------------- storage */
+function load(){
+  try{
+    var raw = localStorage.getItem("leaderlab.v1");
+    if(raw){ var p = JSON.parse(raw); if(p && p.answers){ state.answers = p.answers; } }
+  }catch(e){ /* private mode or file:// — carry on in memory */ }
+}
+function save(){
+  try{ localStorage.setItem("leaderlab.v1", JSON.stringify({answers:state.answers})); }catch(e){}
+}
+
+/* ---------------------------------------------------------------- screens */
+function go(id){
+  stopTimer();
+  var all = document.querySelectorAll(".screen");
+  for(var i=0;i<all.length;i++){ all[i].classList.remove("active"); }
+  var el = document.getElementById(id);
+  if(el){ el.classList.add("active"); }
+  window.scrollTo(0,0);
+}
+
+function toast(msg){
+  var t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(t._h);
+  t._h = setTimeout(function(){ t.classList.remove("on"); }, 2000);
+}
+
+/* ---------------------------------------------------------------- timer */
+function stopTimer(){
+  if(timerId){ clearInterval(timerId); timerId = null; }
+  timerMode = null;
+}
+function runTimer(prefix, seconds){
+  stopTimer();
+  var num = document.getElementById(prefix+"-num");
+  var fill = document.getElementById(prefix+"-fill");
+  var total = seconds, left = seconds;
+  num.className = "tnum";
+  fill.className = "fill";
+  function paint(){
+    var m = Math.floor(Math.abs(left)/60), s = Math.abs(left)%60;
+    num.textContent = (left<0?"+":"") + m + ":" + (s<10?"0":"") + s;
+    var pct = Math.min(100, Math.max(0, (total-left)/total*100));
+    fill.style.width = pct + "%";
+    if(left<=0){ num.className = "tnum over"; fill.className = "fill over"; }
+    else if(left<=10){ num.className = "tnum warn"; fill.className = "fill warn"; }
+  }
+  paint();
+  timerId = setInterval(function(){
+    left--;
+    paint();
+    if(left < -60){ stopTimer(); }
+  }, 1000);
+}
+
+/* ------------------------------------------------------- structure check */
+var RX = {
+  example: /\b(when|once|last (year|term|week)|one day|at (lunch|recess)|in year|I noticed|I remember|there was)\b/i,
+  who:     /\b(friend|buddy|classmate|teacher|team|group|kid|student|brother|sister|mum|dad|cousin|someone|a boy|a girl|new (kid|student))\b/i,
+  action:  /\b(I (would|'d|will|'ll|can|could|want to|plan to)|we (could|would|can)|I'd|I'm going to)\b/i,
+  because: /\b(because|so that|so they|which means|that way|so it)\b/i
+};
+function countWords(t){
+  var m = t.trim().match(/\S+/g);
+  return m ? m.length : 0;
+}
+function checkStructure(text){
+  var w = countWords(text);
+  var out = [];
+  out.push({ok:RX.example.test(text), label:"A real moment",
+            tip:"Add when it happened. \"Last term, at lunch\" is enough."});
+  out.push({ok:RX.who.test(text), label:"Real people",
+            tip:"Say who was there — a friend, a teacher, a younger student."});
+  out.push({ok:RX.action.test(text), label:"What you'd do",
+            tip:"Say the action. \"I would start\" or \"I could ask\"."});
+  out.push({ok:RX.because.test(text), label:"Why it matters",
+            tip:"One \"because\" turns an opinion into an argument."});
+  var lenOk = w >= 20 && w <= 130;
+  out.push({ok:lenOk, label:"About the right length",
+            tip: w < 20 ? "Too short to be convincing — say a bit more."
+                        : "Over 130 words. Cut it to the one thing that matters."});
+  return out;
+}
+function scoreOf(flags){
+  var n = 0;
+  for(var i=0;i<flags.length;i++){ if(flags[i].ok){ n++; } }
+  return n;
+}
+
+/* ------------------------------------------------------------- practice */
+function startPractice(i){
+  pracIndex = Math.max(0, Math.min(PRACTICE.length-1, i));
+  renderPractice();
+  go("s-practice");
+}
+function renderPractice(){
+  stopTimer();
+  var q = PRACTICE[pracIndex];
+  document.getElementById("p-q").textContent = q.q;
+  document.getElementById("p-count").textContent = (pracIndex+1) + " of " + PRACTICE.length;
+  var pill = document.getElementById("p-pill");
+  pill.textContent = q.curve ? "Curveball" : "Warm-up";
+  pill.className = "pill" + (q.curve ? " pill--curve" : "");
+  var ul = document.getElementById("p-hint-list");
+  ul.innerHTML = "";
+  for(var i=0;i<q.hints.length;i++){
+    var li = document.createElement("li");
+    li.textContent = q.hints[i];
+    ul.appendChild(li);
+  }
+  var saved = state.answers[q.id] || {};
+  var ta = document.getElementById("p-text");
+  ta.value = saved.text || "";
+  document.getElementById("p-num").textContent = "0:30";
+  document.getElementById("p-num").className = "tnum";
+  document.getElementById("p-fill").style.width = "0%";
+  document.getElementById("p-fill").className = "fill";
+  renderChips("p-chips", saved.self || [false,false,false], "p");
+  renderFlags("p-flags", ta.value);
+}
+function renderChips(containerId, values, prefix){
+  var box = document.getElementById(containerId);
+  box.innerHTML = "";
+  for(var i=0;i<SELF_CHECKS.length;i++){
+    (function(idx){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.setAttribute("aria-pressed", values[idx] ? "true" : "false");
+      var bx = document.createElement("span"); bx.className = "box";
+      var sp = document.createElement("span"); sp.textContent = SELF_CHECKS[idx];
+      b.appendChild(bx); b.appendChild(sp);
+      b.onclick = function(){
+        var now = b.getAttribute("aria-pressed") === "true";
+        b.setAttribute("aria-pressed", now ? "false" : "true");
+      };
+      box.appendChild(b);
+    })(i);
+  }
+}
+function renderFlags(containerId, text){
+  var box = document.getElementById(containerId);
+  box.innerHTML = "";
+  if(!text || countWords(text) < 3){ return; }
+  var flags = checkStructure(text);
+  for(var i=0;i<flags.length;i++){
+    var f = flags[i];
+    var d = document.createElement("div");
+    d.className = "flag " + (f.ok ? "ok" : "no");
+    var dot = document.createElement("span"); dot.className = "dot";
+    var body = document.createElement("div");
+    var t = document.createElement("b"); t.textContent = f.label;
+    body.appendChild(t);
+    if(!f.ok){ var s = document.createElement("small"); s.textContent = f.tip; body.appendChild(s); }
+    d.appendChild(dot); d.appendChild(body);
+    box.appendChild(d);
+  }
+}
+function collectChips(containerId){
+  var out = [];
+  var chips = document.getElementById(containerId).querySelectorAll(".chip");
+  for(var i=0;i<chips.length;i++){ out.push(chips[i].getAttribute("aria-pressed") === "true"); }
+  return out;
+}
+function savePractice(){
+  var q = PRACTICE[pracIndex];
+  var text = document.getElementById("p-text").value;
+  state.answers[q.id] = {
+    q: q.q, text: text,
+    self: collectChips("p-chips"),
+    flags: checkStructure(text),
+    at: new Date().toISOString()
+  };
+  save();
+  if(pracIndex < PRACTICE.length-1){
+    pracIndex++;
+    renderPractice();
+    toast("Saved — next question");
+  } else {
+    toast("Saved — that's all eight");
+    go("s-home");
+  }
+}
+
+/* ----------------------------------------------------------------- test */
+function startTest(){
+  state.test = {i:0, texts:{}};
+  renderTest();
+  go("s-test");
+}
+function renderTest(){
+  stopTimer();
+  var id = TEST_IDS[state.test.i];
+  var q = findQ(id);
+  document.getElementById("t-q").textContent = q.q;
+  document.getElementById("t-count").textContent = (state.test.i+1) + " of " + TEST_IDS.length;
+  document.getElementById("t-text").value = state.test.texts[id] || "";
+  document.getElementById("t-num").textContent = "0:30";
+  document.getElementById("t-num").className = "tnum";
+  document.getElementById("t-fill").style.width = "0%";
+  document.getElementById("t-fill").className = "fill";
+  document.getElementById("t-next").textContent =
+    (state.test.i === TEST_IDS.length-1) ? "Finish" : "Next question";
+}
+function nextTest(){
+  var id = TEST_IDS[state.test.i];
+  state.test.texts[id] = document.getElementById("t-text").value;
+  if(state.test.i < TEST_IDS.length-1){
+    state.test.i++;
+    renderTest();
+  } else {
+    finishTest();
+  }
+}
+function quitTest(){
+  stopTimer();
+  state.test = {i:0, texts:{}};
+  go("s-home");
+}
+function finishTest(){
+  stopTimer();
+  var total = 0, max = TEST_IDS.length * TOTAL_FLAGS;
+  var bars = document.getElementById("r-bars");
+  bars.innerHTML = "";
+  for(var i=0;i<TEST_IDS.length;i++){
+    var id = TEST_IDS[i];
+    var q = findQ(id);
+    var text = state.test.texts[id] || "";
+    var flags = checkStructure(text);
+    var sc = scoreOf(flags);
+    total += sc;
+    state.answers["test-"+id] = {
+      q: "REAL TEST — " + q.q, text: text, flags: flags, self: [],
+      at: new Date().toISOString()
+    };
+    var row = document.createElement("div");
+    row.className = "bar";
+    var lab = document.createElement("span");
+    lab.textContent = (i+1) + ". " + q.q;
+    var num = document.createElement("span");
+    num.className = "n"; num.textContent = sc + "/" + TOTAL_FLAGS;
+    var track = document.createElement("div"); track.className = "b";
+    var fill = document.createElement("i");
+    fill.style.width = (sc/TOTAL_FLAGS*100) + "%";
+    track.appendChild(fill);
+    row.appendChild(lab); row.appendChild(num); row.appendChild(track);
+    bars.appendChild(row);
+  }
+  save();
+  document.getElementById("r-score").textContent = total;
+  document.getElementById("r-of").textContent = "out of " + max;
+  var pct = total/max;
+  var blurb;
+  if(pct >= 0.8){ blurb = "Strong structure across the board. Now the real test is whether the stories are yours — send these to your coach and find out."; }
+  else if(pct >= 0.5){ blurb = "Good bones. The gaps below are the quickest wins — mostly it's naming who was there and saying what you'd actually do."; }
+  else { blurb = "This is a first draft, and that's fine. Go back to the warm-up questions, add one real story, and run it again."; }
+  document.getElementById("r-blurb").textContent = blurb;
+  document.getElementById("r-title").textContent = pct >= 0.8 ? "That's interview-ready shape." : "Here's where you are.";
+  go("s-result");
+}
+
+/* -------------------------------------------------------------- answers */
+function findQ(id){
+  for(var i=0;i<PRACTICE.length;i++){ if(PRACTICE[i].id === id){ return PRACTICE[i]; } }
+  return {q:id, hints:[]};
+}
+function showAnswers(){
+  var list = document.getElementById("a-list");
+  list.innerHTML = "";
+  var keys = Object.keys(state.answers);
+  if(!keys.length){
+    var p = document.createElement("p");
+    p.className = "fine";
+    p.textContent = "Nothing saved yet. Have a go at a warm-up question first.";
+    list.appendChild(p);
+  }
+  for(var i=0;i<keys.length;i++){
+    var a = state.answers[keys[i]];
+    var c = document.createElement("div");
+    c.className = "card"; c.style.marginBottom = "12px";
+    var h = document.createElement("div");
+    h.className = "label"; h.style.marginBottom = "8px";
+    h.textContent = a.q;
+    var b = document.createElement("p");
+    b.style.margin = "0"; b.style.whiteSpace = "pre-wrap";
+    b.textContent = a.text || "(no answer written)";
+    c.appendChild(h); c.appendChild(b);
+    list.appendChild(c);
+  }
+  go("s-answers");
+}
+function buildReport(){
+  var lines = ["2027 Student Leaders — practice answers", ""];
+  var keys = Object.keys(state.answers);
+  for(var i=0;i<keys.length;i++){
+    var a = state.answers[keys[i]];
+    var sc = a.flags ? scoreOf(a.flags) : 0;
+    lines.push("Q: " + a.q);
+    lines.push("A: " + (a.text || "(nothing written)"));
+    lines.push("Structure: " + sc + "/" + TOTAL_FLAGS);
+    lines.push("");
+  }
+  lines.push("Please rate these against the rubric.");
+  return lines.join("\n");
+}
+function copyReport(){
+  var text = buildReport();
+  var box = document.getElementById("copybox");
+  if(box){ box.value = text; }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){
+      toast("Copied — paste it in the chat");
+    }).catch(function(){ fallbackCopy(text); });
+  } else {
+    fallbackCopy(text);
+  }
+}
+function fallbackCopy(text){
+  var box = document.getElementById("copybox");
+  if(box){
+    box.value = text;
+    box.focus(); box.select();
+    toast("Long-press the box and tap Copy");
+  }
+}
+
+/* ------------------------------------------------------------ countdown */
+function countdown(){
+  var target = new Date("2026-12-03T09:00:00+11:00");
+  var now = new Date();
+  var days = Math.ceil((target - now) / 86400000);
+  var el = document.getElementById("countdown");
+  if(days > 1){ el.innerHTML = "<b>" + days + "</b> days to interviews"; }
+  else if(days === 1){ el.innerHTML = "<b>Tomorrow</b> — early night"; }
+  else if(days === 0){ el.innerHTML = "<b>Today</b> — you're ready"; }
+  else { el.innerHTML = "Interviews done"; }
+}
+
+/* ----------------------------------------------------------------- boot */
+load();
+countdown();
+var ta = document.getElementById("p-text");
+if(ta){
+  ta.addEventListener("input", function(){
+    renderFlags("p-flags", ta.value);
+  });
+}
+</script>
+</body>
+</html>
